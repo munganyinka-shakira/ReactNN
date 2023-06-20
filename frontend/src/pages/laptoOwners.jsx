@@ -5,20 +5,20 @@ import Modal from '../components/Modal';
 import { selectIsLoggedIn } from '../store/modules/authSlice';
 import AppServices from "../services";
 import toast from 'react-hot-toast';
-import { selectVehicles, setVehicles,addVehicle,updateVehicle,removeVehicle } from '../store/modules/equipmentSlice';
+import { selectLaptopOwners, setLaptopOwners,addLaptopOwner,updateLaptopOwner,removeLaptopOwner } from '../store/modules/laptopOwnerSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-function Equipments() {
+function LaptopOwners() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const vehicles = useSelector(selectVehicles);
+  const LaptopOwners = useSelector(selectLaptopOwners);
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({});
 
   useEffect(() => {
     if (isLoggedIn) {
-      AppServices.getEquipments().then((response) => {
+      AppServices.getLaptopOwners().then((response) => {
         if (response.data.data) {
-          dispatch(setEquipments(response.data.data))
+          dispatch(setLaptopOwners(response.data.data))
         }
       })
     }
@@ -32,33 +32,33 @@ function Equipments() {
   }
 
 
-  const [selectedEquipment, setSelectedEquipment] = useState({})
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState("")
+  const [selectedLaptopOwner, setSelectedLaptopOwner] = useState({})
+  const [selectedLaptopOwnerId, setSelectedLaptopOwnerId] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
 
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const isUpdating = selectedEquipmentId !== "";
+    const isUpdating = selectedLaptopOwnerId !== "";
 
     toast.promise(
-      isDeleting ? AppServices.deleteEquipment(selectedEquipmentId) : isUpdating ? AppServices.updateEquipment(selectedEquipment, selectedEquipmentId) : AppServices.registerEquipment(selectedEquipment),
+      isDeleting ? AppServices.deleteLaptopOwner(selectedLaptopOwnerId) : isUpdating ? AppServices.updateLaptopOwner(selectedLaptopOwner, selectedLaptopOwnerId) : AppServices.registerLaptopOwner(selectedLaptopOwner),
       {
-        loading: `${isDeleting ? 'Deleting' : isUpdating ? 'Updating' : 'Creating'} equipment ...`,
+        loading: `${isDeleting ? 'Deleting' : isUpdating ? 'Updating' : 'Creating'} LaptopOwner ...`,
         success: (response) => {
-          if (isDeleting) dispatch(removeEquipment(selectedEquipmentId));
-          else if (isUpdating) dispatch(updateEquipment({...response.data.data,...selectedEquipment}));
-          else dispatch(addEquipment(response.data.data))
+          if (isDeleting) dispatch(removeLaptopOwner(selectedLaptopOwnerId));
+          else if (isUpdating) dispatch(updateLaptopOwner({...response.data.data,...selectedLaptopOwner}));
+          else dispatch(addLaptopOwner(response.data.data))
 
-          if (selectedEquipment.password?.length) {
-            AppServices.updateEquipmentPassword({ newPassword: selectedEquipment.password, confirmPassword: selectedEquipment.password }, selectedEquipmentId)
+          if (selectedLaptopOwner.password?.length) {
+            AppServices.updateLaptopOwnerPassword({ newPassword: selectedLaptopOwner.password, confirmPassword: selectedLaptopOwner.password }, selectedLaptopOwnerId)
           }
 
-          let message = `${isDeleting ? 'Deleted' : isUpdating ? 'Updated' : 'Created'} equipment successfully`
-          if (isUpdating) setSelectedEquipmentId("");
+          let message = `${isDeleting ? 'Deleted' : isUpdating ? 'Updated' : 'Created'} LaptopOwner successfully`
+          if (isUpdating) setSelectedLaptopOwnerId("");
           if (isDeleting) setIsDeleting(false);
-          setSelectedEquipment({});
+          setSelectedLaptopOwner({});
           toggleModal();
           return message;
         },
@@ -70,8 +70,8 @@ function Equipments() {
             error.message ||
             error.toString();
             if(message.includes("required pattern"))
-            if(message.includes("chasisNumber")) return "invalid chasisNumber number";
-            else return "invalid laptop maufacturer"
+            if(message.includes("phone")) return "invalid phone number";
+            else return "invalid nationalId"
           return message;
         },
       }
@@ -82,7 +82,7 @@ function Equipments() {
     <div className="pl-10 pt-10">
       <div>
         <div className="title">
-          Equipments
+          Laptop Owners
         </div>
         <div className="md:flex">
           <div className='w-full'>
@@ -93,7 +93,7 @@ function Equipments() {
                 </svg>
 
                 </div>
-                <div className='mt-1'>Create a new equipment</div>
+                <div className='mt-1'>Create a new Laptop owner</div>
 
               </button>
               </div>
@@ -110,42 +110,49 @@ function Equipments() {
                     className="
               flex flex-col flex-no
               wrap
-              
-              rounded-l-lg rounded-none
-              
+          
             "
                   >
-                    
-                    <th>Chasis Number</th>
-                    <th>Manufacturer</th>
-                    <th>serialNumber</th>
-                    <th>Model</th>
+                    <th>Names</th>
+                    <th>Phone number</th>
+                    <th>Address</th>
+                    <th>National Id</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody className="sm:flex-none">
                   {
-                  vehicles.map((doc) => <tr key={doc._id} className="
+                  LaptopOwners.map((doc) => <tr key={doc._id} className="
               sm:flex
               sm:flex-col
               sm:flex-no
               sm:wrap
+            
+              sm:mb-0
               main-header
               sm:header tr
             ">
-                   
-                    <td className='pt-1 p-3'>                      <div className=''>
-                      {doc?.chasisNumber}
-                    </div></td>
-                    <td className='pt-1 p-3'>{doc?.Manufacturer}</td>
-                    <td className='pt-1 p-3'>{doc?.serialNumber}</td>
-                    <td className='pt-1 p-3'>{doc?.Model}</td>
                     <td className='pt-1 p-3'>
                       <div className="flex">
-                        <div onClick={() => { setSelectedEquipment({ serialNumber: doc.serialNumber,Manufacturer: doc.Manufacturer, chasisNumber: doc.chasisNumber}); setSelectedEquipmentId(doc._id); toggleModal(); }} className='status cursor-pointer rounded mr-2'>
+                        <div></div>
+                        <div>{doc?.names}</div>
+                      </div>
+                    </td>
+                    <td className='pt-1 p-3'>                      <div className=''>
+                      {doc?.phone}
+                    </div></td>
+                    <td className='pt-1 p-3'>
+                      <div className=''>
+                        {doc?.address}
+                      </div>
+                    </td>
+                    <td className='pt-1 p-3'>{doc?.nationalId}</td>
+                    <td className='pt-1 p-3'>
+                      <div className="flex">
+                        <div onClick={() => { setSelectedLaptopOwner({ names: doc.names, address: doc.address, phone: doc.phone, nationalId: doc.nationalId}); setSelectedLaptopOwnerId(doc._id); toggleModal(); }} className='status cursor-pointer rounded mr-2'>
                           Update
                         </div>
-                        <div onClick={() => { setIsDeleting(true); setSelectedEquipmentId(doc._id); toggleModal() }} className='status cursor-pointer rounded'>
+                        <div onClick={() => { setIsDeleting(true); setSelectedLaptopOwnerId(doc._id); toggleModal() }} className='status cursor-pointer rounded'>
                           Delete
                         </div>
                       </div>
@@ -160,7 +167,7 @@ function Equipments() {
       <Modal ref={childRef} width="767px">
         {isDeleting ? <div>
           <div className="modal-title text-center my-10">
-            Are you sure you want to delete the selected equipment ?
+            Are you sure you want to delete the selected LaptopOwner ?
           </div>
           <div className="modal-footer my-10">
             <div className="flex justify-center">
@@ -170,33 +177,32 @@ function Equipments() {
           </div>
         </div> : <div>
           <div className="modal-title text-center my-10">
-            {selectedVehicleId !== "" ? "Update equipment" : "Create equipment"}
+            {selectedLaptopOwnerId !== "" ? "Update LaptopOwner" : "Create LaptopOwner"}
           </div>
           <div className="modal-body">
             <form>
               <div className="">
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
-                    
-
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">Manufacture company</label>
-                      <input defaultValue={selectedEquipment?.Manufacturer} onChange={(e) => { setSelectedEquipment({ ...selectedEquipment, Manufacturer: e.target.value }) }} type="text" id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Names</label>
+                      <input defaultValue={selectedLaptopOwner?.names} onChange={(e) => { setSelectedLaptopOwner({ ...selectedLaptopOwner, names: e.target.value }) }} type="text" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Chasis number</label>
-                      <input defaultValue={selectedEquipment?.chasisNumber} onChange={(e) => { setSelectedEquipment({ ...selectedEquipment, chasisNumber: e.target.value }) }} type="number" id="email-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Address</label>
+                      <input defaultValue={selectedLaptopOwner?.address} onChange={(e) => { setSelectedLaptopOwner({ ...selectedLaptopOwner, address: e.target.value }) }} type="text" id="last-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="email-address1" className="block text-sm font-medium text-gray-700">serialNumber</label>
-                      <input defaultValue={selectedEquipment?.serialNumber} onChange={(e) => { setSelectedEquipment({ ...selectedEquipment, serialNumber: e.target.value }) }} type="number" id="email-address1" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Phone</label>
+                      <input defaultValue={selectedLaptopOwner?.phone} onChange={(e) => { setSelectedLaptopOwner({ ...selectedLaptopOwner, phone: e.target.value }) }} type="number" maxLength={10} minLength={10} id="email-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="password1" className="block text-sm font-medium text-gray-700">Manufacturer</label>
-                      <input defaultValue={selectedEquipment?.Manufacturer} onChange={(e) => { setSelectedEquipment({ ...selectedEquipment, Manufacturer: e.target.value }) }} type="number" id="password1" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">NationalId</label>
+                      <input defaultValue={selectedLaptopOwner?.nationalId} onChange={(e) => { setSelectedLaptopOwner({ ...selectedLaptopOwner, nationalId: e.target.value }) }} type="number" maxLength={16} minLength={16} id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -214,4 +220,4 @@ function Equipments() {
   )
 }
 
-export default Equipments
+export default LaptopOwners
