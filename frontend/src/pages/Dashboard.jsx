@@ -171,9 +171,9 @@ function EquipmentLaptopOwners() {
                     className="
               flex flex-col flex-no
               wrap
-              table-row
+              
               rounded-l-lg rounded-none
-              mb-2 mb-0
+              
             "
                   >
                     <th>User Names</th>
@@ -183,18 +183,18 @@ function EquipmentLaptopOwners() {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="sm:flex-1 sm:flex-none">
+                <tbody className=" sm:flex-none">
                   {EquipmentLaptopOwners.map((doc) => (
                     <tr
                       key={doc._id}
                       className="
-              sm:flex
+              
               sm:flex-col
               sm:flex-no
               sm:wrap
               sm:table-row
               sm:mb-2
-              sm:mb-0
+              s
               main-header
               sm:header tr
             "

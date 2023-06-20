@@ -23,15 +23,15 @@ export const AuthSlice = createSlice({
         }
       }
     },
-    removeCarOwner: (state, action) => {
+    removeLaptopOwner: (state, action) => {
       state.carOwners.docs = state.carOwners.docs.filter((carOwner) => carOwner._id !== action.payload);
     },
   },
 });
 
-export const { setCarOwners, addCarOwner, removeCarOwner,updateCarOwner } = AuthSlice.actions;
+export const {setLaptopOwners, addLaptopOwner, removeLaptopOwner,updateLaptopOwner } = AuthSlice.actions;
 
-export const selectCarOwners = (state) => state.carOwner.carOwners.docs;
+export const selectLaptopOwners = (state) => state.carOwner.carOwners.docs;
 export const isCarOwnersLoaded = (state) => states.carOwner.isCarOwnersLoaded;
 
 export default AuthSlice.reducer;
